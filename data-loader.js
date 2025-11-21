@@ -1,6 +1,7 @@
 // Enhanced World Bank Development Data with complete time series
+// Global variables for use in main.js
 
-export const regionalGDPData = {
+const regionalGDPData = {
   1960: [
     { region: 'North America', gdp: 0.58, population: 199, color: '#4e79a7' },
     { region: 'Europe', gdp: 0.52, population: 423, color: '#f28e2c' },
@@ -67,13 +68,13 @@ export const regionalGDPData = {
 };
 
 // Top 10 countries for racing bar chart
-export const top10Countries = {
+const top10Countries = {
   gdp: ['United States', 'China', 'Japan', 'Germany', 'India', 'United Kingdom', 'France', 'Brazil', 'Italy', 'Canada'],
   population: ['China', 'India', 'United States', 'Indonesia', 'Brazil', 'Pakistan', 'Nigeria', 'Bangladesh', 'Russia', 'Mexico'],
   life_expectancy: ['Japan', 'Switzerland', 'Singapore', 'Spain', 'Italy', 'Australia', 'France', 'South Korea', 'Canada', 'Norway']
 };
 
-export const healthData = {
+const healthData = {
   1960: [
     { country: 'United States', gdpPerCapita: 3007, lifeExpectancy: 69.77, population: 180671000, region: 'North America' },
     { country: 'China', gdpPerCapita: 89, lifeExpectancy: 43.47, population: 667070000, region: 'East Asia' },
@@ -137,7 +138,7 @@ export const healthData = {
 };
 
 // Country coordinates for map visualization
-export const countryCoordinates = {
+const countryCoordinates = {
   'United States': { lng: -95.7129, lat: 37.0902 },
   'China': { lng: 104.1954, lat: 35.8617 },
   'India': { lng: 78.9629, lat: 20.5937 },
@@ -147,24 +148,24 @@ export const countryCoordinates = {
 };
 
 // Async data loading functions
-export async function loadGDPData() {
+async function loadGDPData() {
   // Simulate async loading
   return new Promise((resolve) => {
-    setTimeout(() => resolve(sampleGDPData), 100);
+    setTimeout(() => resolve(regionalGDPData), 100);
   });
 }
 
-export async function loadHealthData(year) {
+async function loadHealthData(year) {
   // Simulate async loading
   return new Promise((resolve) => {
     setTimeout(() => resolve(healthData[year] || healthData[2020]), 100);
   });
 }
 
-export async function getAllHealthYears() {
+async function getAllHealthYears() {
   return Object.keys(healthData).map(Number).sort((a, b) => a - b);
 }
 
-export function getCountryCoordinates(countryName) {
+function getCountryCoordinates(countryName) {
   return countryCoordinates[countryName] || null;
 }

@@ -367,6 +367,15 @@ nav {
   border-radius: 2px;
 }
 
+.section-subtitle {
+  text-align: center;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: -2rem auto 3rem;
+  line-height: 1.6;
+}
+
 #scrolly {
   position: relative;
   display: flex;

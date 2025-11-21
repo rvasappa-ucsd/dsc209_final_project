@@ -64,11 +64,12 @@
 
   <!-- Scrollytelling Timeline -->
   <section id="timeline" class="scrolly-section">
-    <h2 class="section-title">Journey Through Six Decades</h2>
+    <h2 class="section-title">Journey Through Time: 1960-2020</h2>
+    <p class="section-subtitle">Scroll through six decades of transformation. Watch as economic, social, and technological changes reshape our world.</p>
     
     <div id="scrolly">
       <figure class="sticky">
-        <svg id="timeline-viz" viewBox="0 0 800 600"></svg>
+        <svg id="timeline-viz" viewBox="0 0 900 600"></svg>
         <div id="timeline-year-display">1960</div>
       </figure>
       
@@ -76,9 +77,9 @@
         <div class="step" data-step="1960" data-index="0">
           <div class="step-content">
             <span class="step-year">1960</span>
-            <h3>The Dawn of Modern Development</h3>
+            <h3>🌅 The Dawn of Development</h3>
             <p>
-              The post-colonial era begins. Life expectancy averages just 52 years globally. 
+              The world emerges from colonialism. Global life expectancy: 52 years. 
               The Space Race symbolizes technological ambition while most of humanity lives 
               without basic infrastructure. GDP per capita in developing nations: $200-500.
             </p>
@@ -197,7 +198,8 @@
 
   <!-- Main Visualizations -->
   <section id="visualizations" class="viz-section">
-    <h2 class="section-title">Data Explorations</h2>
+    <h2 class="section-title">Interactive Data Explorations</h2>
+    <p class="section-subtitle">Dive deep into the data. Each visualization reveals a unique perspective on 60 years of global transformation.</p>
     
     <!-- Visualization 1: Animated World Choropleth Map -->
     <div class="viz-container featured">
@@ -385,6 +387,7 @@
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script src="https://unpkg.com/intersection-observer@0.12.0/intersection-observer.js"></script>
   <script src="https://unpkg.com/scrollama"></script>
-  <script type="module" src="main.js"></script>
+  <script src="data-loader.js"></script>
+  <script src="main-new.js"></script>
 </body>
 </html>
