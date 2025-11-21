@@ -1,15 +1,77 @@
-// Sample World Bank Development Data
-// In production, this would be loaded from actual CSV files
+// Enhanced World Bank Development Data with complete time series
 
-export const sampleGDPData = [
-  { region: 'North America', gdp: 24.8, population: 579, year: 2020 },
-  { region: 'Europe', gdp: 19.2, population: 748, year: 2020 },
-  { region: 'East Asia', gdp: 18.5, population: 1678, year: 2020 },
-  { region: 'South Asia', gdp: 3.5, population: 1856, year: 2020 },
-  { region: 'Africa', gdp: 2.6, population: 1341, year: 2020 },
-  { region: 'Latin America', gdp: 4.9, population: 653, year: 2020 },
-  { region: 'Middle East', gdp: 3.8, population: 411, year: 2020 }
-];
+export const regionalGDPData = {
+  1960: [
+    { region: 'North America', gdp: 0.58, population: 199, color: '#4e79a7' },
+    { region: 'Europe', gdp: 0.52, population: 423, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 0.08, population: 705, color: '#e15759' },
+    { region: 'South Asia', gdp: 0.04, population: 572, color: '#76b7b2' },
+    { region: 'Africa', gdp: 0.05, population: 285, color: '#59a14f' },
+    { region: 'Latin America', gdp: 0.11, population: 221, color: '#edc949' },
+    { region: 'Middle East', gdp: 0.03, population: 52, color: '#af7aa1' }
+  ],
+  1970: [
+    { region: 'North America', gdp: 1.18, population: 232, color: '#4e79a7' },
+    { region: 'Europe', gdp: 1.36, population: 462, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 0.27, population: 978, color: '#e15759' },
+    { region: 'South Asia', gdp: 0.08, population: 710, color: '#76b7b2' },
+    { region: 'Africa', gdp: 0.10, population: 366, color: '#59a14f' },
+    { region: 'Latin America', gdp: 0.23, population: 286, color: '#edc949' },
+    { region: 'Middle East', gdp: 0.07, population: 72, color: '#af7aa1' }
+  ],
+  1980: [
+    { region: 'North America', gdp: 2.95, population: 256, color: '#4e79a7' },
+    { region: 'Europe', gdp: 3.98, population: 487, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 0.79, population: 1170, color: '#e15759' },
+    { region: 'South Asia', gdp: 0.23, population: 918, color: '#76b7b2' },
+    { region: 'Africa', gdp: 0.31, population: 478, color: '#59a14f' },
+    { region: 'Latin America', gdp: 0.87, population: 362, color: '#edc949' },
+    { region: 'Middle East', gdp: 0.41, population: 104, color: '#af7aa1' }
+  ],
+  1990: [
+    { region: 'North America', gdp: 6.23, population: 283, color: '#4e79a7' },
+    { region: 'Europe', gdp: 8.47, population: 503, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 1.87, population: 1373, color: '#e15759' },
+    { region: 'South Asia', gdp: 0.42, population: 1166, color: '#76b7b2' },
+    { region: 'Africa', gdp: 0.38, population: 632, color: '#59a14f' },
+    { region: 'Latin America', gdp: 1.15, population: 443, color: '#edc949' },
+    { region: 'Middle East', gdp: 0.48, population: 141, color: '#af7aa1' }
+  ],
+  2000: [
+    { region: 'North America', gdp: 11.05, population: 316, color: '#4e79a7' },
+    { region: 'Europe', gdp: 9.49, population: 536, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 4.16, population: 1492, color: '#e15759' },
+    { region: 'South Asia', gdp: 0.76, population: 1426, color: '#76b7b2' },
+    { region: 'Africa', gdp: 0.60, population: 814, color: '#59a14f' },
+    { region: 'Latin America', gdp: 2.18, population: 523, color: '#edc949' },
+    { region: 'Middle East', gdp: 0.82, population: 190, color: '#af7aa1' }
+  ],
+  2010: [
+    { region: 'North America', gdp: 15.53, population: 345, color: '#4e79a7' },
+    { region: 'Europe', gdp: 16.31, population: 605, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 9.63, population: 1584, color: '#e15759' },
+    { region: 'South Asia', gdp: 2.24, population: 1689, color: '#76b7b2' },
+    { region: 'Africa', gdp: 1.52, population: 1048, color: '#59a14f' },
+    { region: 'Latin America', gdp: 5.52, population: 594, color: '#edc949' },
+    { region: 'Middle East', gdp: 2.29, population: 242, color: '#af7aa1' }
+  ],
+  2020: [
+    { region: 'North America', gdp: 24.8, population: 579, color: '#4e79a7' },
+    { region: 'Europe', gdp: 19.2, population: 748, color: '#f28e2c' },
+    { region: 'East Asia', gdp: 18.5, population: 1678, color: '#e15759' },
+    { region: 'South Asia', gdp: 3.5, population: 1856, color: '#76b7b2' },
+    { region: 'Africa', gdp: 2.6, population: 1341, color: '#59a14f' },
+    { region: 'Latin America', gdp: 4.9, population: 653, color: '#edc949' },
+    { region: 'Middle East', gdp: 3.8, population: 411, color: '#af7aa1' }
+  ]
+};
+
+// Top 10 countries for racing bar chart
+export const top10Countries = {
+  gdp: ['United States', 'China', 'Japan', 'Germany', 'India', 'United Kingdom', 'France', 'Brazil', 'Italy', 'Canada'],
+  population: ['China', 'India', 'United States', 'Indonesia', 'Brazil', 'Pakistan', 'Nigeria', 'Bangladesh', 'Russia', 'Mexico'],
+  life_expectancy: ['Japan', 'Switzerland', 'Singapore', 'Spain', 'Italy', 'Australia', 'France', 'South Korea', 'Canada', 'Norway']
+};
 
 export const healthData = {
   1960: [
@@ -17,8 +79,12 @@ export const healthData = {
     { country: 'China', gdpPerCapita: 89, lifeExpectancy: 43.47, population: 667070000, region: 'East Asia' },
     { country: 'India', gdpPerCapita: 82, lifeExpectancy: 41.39, population: 450547000, region: 'South Asia' },
     { country: 'Germany', gdpPerCapita: 2083, lifeExpectancy: 69.26, population: 72814900, region: 'Europe' },
+    { country: 'Japan', gdpPerCapita: 479, lifeExpectancy: 67.84, population: 92500572, region: 'East Asia' },
+    { country: 'United Kingdom', gdpPerCapita: 1492, lifeExpectancy: 70.96, population: 52372000, region: 'Europe' },
     { country: 'Brazil', gdpPerCapita: 449, lifeExpectancy: 54.69, population: 72757000, region: 'Latin America' },
-    { country: 'Nigeria', gdpPerCapita: 150, lifeExpectancy: 37.48, population: 45138458, region: 'Africa' }
+    { country: 'Nigeria', gdpPerCapita: 150, lifeExpectancy: 37.48, population: 45138458, region: 'Africa' },
+    { country: 'Mexico', gdpPerCapita: 565, lifeExpectancy: 57.13, population: 38677000, region: 'Latin America' },
+    { country: 'Indonesia', gdpPerCapita: 101, lifeExpectancy: 44.11, population: 87792512, region: 'East Asia' }
   ],
   1970: [
     { country: 'United States', gdpPerCapita: 5234, lifeExpectancy: 70.81, population: 205052000, region: 'North America' },

@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Animated background particles -->
+  <canvas id="particles"></canvas>
   <!-- Navigation -->
   <nav>
     <div class="nav-content">
@@ -32,71 +34,161 @@
   <!-- Hero Section -->
   <header id="overview" class="hero">
     <div class="hero-content">
-      <h1>Echoes of History</h1>
-      <p class="subtitle">An Interactive Exploration of Human Development (1960-2020)</p>
-      <p class="description">
+      <h1 class="glitch" data-text="Echoes of History">Echoes of History</h1>
+      <p class="subtitle fade-in">An Interactive Exploration of Human Development (1960-2020)</p>
+      <p class="description fade-in-delay">
         Discover 60 years of global transformation through data. Explore how major historical 
         events shaped development across 250+ countries and 20 indicators—from GDP growth to 
         climate change, from digital revolutions to demographic shifts.
       </p>
-      <div class="team-info">
-        <h3>Team Data Echoes</h3>
-        <p>DSC 209R Fall 2025</p>
+      <div class="stats-preview">
+        <div class="stat-item">
+          <span class="stat-number" data-target="250">0</span>
+          <span class="stat-label">Countries</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="60">0</span>
+          <span class="stat-label">Years</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="20">0</span>
+          <span class="stat-label">Indicators</span>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <div class="mouse"></div>
+        <p>Scroll to explore</p>
       </div>
     </div>
   </header>
 
   <!-- Scrollytelling Timeline -->
   <section id="timeline" class="scrolly-section">
-    <h2>The Story Through Time</h2>
+    <h2 class="section-title">Journey Through Six Decades</h2>
     
     <div id="scrolly">
       <figure class="sticky">
-        <div id="timeline-viz"></div>
+        <svg id="timeline-viz" viewBox="0 0 800 600"></svg>
+        <div id="timeline-year-display">1960</div>
       </figure>
       
       <article>
-        <div class="step" data-step="0">
+        <div class="step" data-step="1960" data-index="0">
           <div class="step-content">
-            <h3>1960s: The Beginning</h3>
+            <span class="step-year">1960</span>
+            <h3>The Dawn of Modern Development</h3>
             <p>
-              The Cold War era sets the stage. Nations emerge from colonialism, 
-              economies rebuild after World War II, and the Space Race captures 
-              global imagination. Life expectancy averages 52 years worldwide.
+              The post-colonial era begins. Life expectancy averages just 52 years globally. 
+              The Space Race symbolizes technological ambition while most of humanity lives 
+              without basic infrastructure. GDP per capita in developing nations: $200-500.
             </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $1.3T</div>
+              <div class="stat">🏥 Life Expectancy: 52 years</div>
+              <div class="stat">📱 Mobile Phones: 0</div>
+            </div>
           </div>
         </div>
         
-        <div class="step" data-step="1">
+        <div class="step" data-step="1970" data-index="1">
           <div class="step-content">
-            <h3>1980s: Economic Shifts</h3>
+            <span class="step-year">1970</span>
+            <h3>Green Revolution & Oil Shocks</h3>
             <p>
-              China begins market reforms. The digital revolution starts. 
-              Developing nations face debt crises. GDP growth diverges dramatically 
-              between regions as economic policies reshape the world.
+              Agricultural innovations transform Asia. The first oil crisis reshapes economies. 
+              Population growth accelerates. Technology begins bridging distances with satellite 
+              communications, yet inequality widens between developed and developing worlds.
             </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $3.4T</div>
+              <div class="stat">🏥 Life Expectancy: 59 years</div>
+              <div class="stat">🌾 Green Revolution Impact: +60% yield</div>
+            </div>
           </div>
         </div>
         
-        <div class="step" data-step="2">
+        <div class="step" data-step="1980" data-index="2">
           <div class="step-content">
-            <h3>2000s: Digital Transformation</h3>
+            <span class="step-year">1980</span>
+            <h3>China Opens & Debt Crisis</h3>
             <p>
-              Mobile phones reach billions. Internet access becomes essential. 
-              The digital divide emerges as developed nations leap ahead in 
-              infrastructure while others struggle to catch up.
+              China's market reforms begin transforming the global economy. Latin America faces 
+              debt crisis. Personal computers emerge. The digital age dawns quietly. Cold War 
+              tensions remain high, shaping development trajectories across continents.
             </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $11.1T</div>
+              <div class="stat">🏥 Life Expectancy: 63 years</div>
+              <div class="stat">💻 PC Sales: 1M units</div>
+            </div>
           </div>
         </div>
         
-        <div class="step" data-step="3">
+        <div class="step" data-step="1990" data-index="3">
           <div class="step-content">
-            <h3>2020: Present Day</h3>
+            <span class="step-year">1990</span>
+            <h3>Cold War Ends, Globalization Begins</h3>
             <p>
-              Global life expectancy reaches 73 years. Climate change dominates 
-              discourse. COVID-19 reshapes economies. The data reveals our 
-              interconnected world and the challenges ahead.
+              The Berlin Wall falls. The Soviet Union dissolves. The internet goes public. 
+              Mobile phones begin spreading. India liberalizes its economy. A new era of 
+              interconnected global development emerges with unprecedented speed.
             </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $23.9T</div>
+              <div class="stat">🏥 Life Expectancy: 65 years</div>
+              <div class="stat">📱 Mobile Subscribers: 11M</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="step" data-step="2000" data-index="4">
+          <div class="step-content">
+            <span class="step-year">2000</span>
+            <h3>Millennium & Digital Divide</h3>
+            <p>
+              The dot-com boom and bust. September 11 reshapes geopolitics. China joins WTO. 
+              Mobile phones reach 1 billion users. The digital divide becomes apparent as 
+              developed nations leap ahead in connectivity and information access.
+            </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $33.7T</div>
+              <div class="stat">🏥 Life Expectancy: 67 years</div>
+              <div class="stat">📱 Mobile Subscribers: 738M</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="step" data-step="2010" data-index="5">
+          <div class="step-content">
+            <span class="step-year">2010</span>
+            <h3>Financial Crisis Aftermath</h3>
+            <p>
+              Recovery from the 2008 crisis reshapes economies. Smartphones revolutionize daily 
+              life. Social media connects billions. Climate change moves to the forefront. 
+              China becomes the world's second-largest economy, shifting global power dynamics.
+            </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $66.3T</div>
+              <div class="stat">🏥 Life Expectancy: 71 years</div>
+              <div class="stat">📱 Mobile Subscribers: 5.4B</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="step" data-step="2020" data-index="6">
+          <div class="step-content">
+            <span class="step-year">2020</span>
+            <h3>Pandemic & Transformation</h3>
+            <p>
+              COVID-19 disrupts the world. Digital transformation accelerates dramatically. 
+              Remote work becomes normal. Climate action intensifies. Global life expectancy 
+              reaches 73 years. The interconnected nature of human development becomes undeniable.
+            </p>
+            <div class="step-stats">
+              <div class="stat">📊 Global GDP: $84.7T</div>
+              <div class="stat">🏥 Life Expectancy: 73 years</div>
+              <div class="stat">📱 Mobile Subscribers: 8.0B</div>
+            </div>
           </div>
         </div>
       </article>
@@ -105,64 +197,107 @@
 
   <!-- Main Visualizations -->
   <section id="visualizations" class="viz-section">
-    <h2>Interactive Visualizations</h2>
+    <h2 class="section-title">Data Explorations</h2>
     
-    <!-- Visualization 1: GDP Distribution Pie Chart -->
-    <div class="viz-container">
+    <!-- Visualization 1: Animated World Choropleth Map -->
+    <div class="viz-container featured">
       <div class="viz-header">
-        <h3>📈 Global GDP Distribution by Region (2020)</h3>
-        <p>Explore how economic power is distributed across world regions. Click a slice to see detailed data.</p>
-      </div>
-      <div class="viz-content">
-        <div class="viz-main">
-          <svg id="gdp-chart" viewBox="-150 -150 300 300"></svg>
-        </div>
-        <div class="viz-legend">
-          <h4>Regions</h4>
-          <ul id="gdp-legend" class="legend"></ul>
-        </div>
-      </div>
-      <div class="viz-info" id="gdp-info">
-        <p>Click on a region to see detailed information.</p>
-      </div>
-    </div>
-
-    <!-- Visualization 2: Health vs Wealth Scatter Plot -->
-    <div class="viz-container">
-      <div class="viz-header">
-        <h3>🏥 Life Expectancy vs GDP Per Capita</h3>
-        <p>Discover the relationship between economic development and health outcomes. Hover over points for country details.</p>
-      </div>
-      <div class="viz-content">
-        <svg id="health-chart" viewBox="0 0 800 500"></svg>
+        <h3>🌍 Global Development Patterns</h3>
+        <p>Watch how development indicators evolved across the globe over 60 years</p>
       </div>
       <div class="viz-controls">
-        <label>
-          Year: <span id="year-display">2020</span>
-          <input type="range" id="year-slider" min="1960" max="2020" value="2020" step="10">
-        </label>
+        <div class="control-group">
+          <label>Indicator:</label>
+          <select id="map-indicator">
+            <option value="gdp">GDP Per Capita</option>
+            <option value="life_expectancy" selected>Life Expectancy</option>
+            <option value="internet">Internet Penetration</option>
+            <option value="mobile">Mobile Subscriptions</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Year: <span id="map-year-display">2020</span></label>
+          <input type="range" id="map-year-slider" min="1960" max="2020" value="2020" step="1">
+        </div>
+        <div class="control-group">
+          <button id="play-pause-btn" class="play-btn">▶ Play</button>
+        </div>
       </div>
+      <div id="world-map"></div>
+      <div class="map-legend" id="map-legend"></div>
+    </div>
+
+    <!-- Visualization 2: Animated Racing Bar Chart -->
+    <div class="viz-container featured">
+      <div class="viz-header">
+        <h3>🏆 Top 10 Countries Race</h3>
+        <p>Watch countries compete across development metrics through time</p>
+      </div>
+      <div class="viz-controls">
+        <div class="control-group">
+          <label>Metric:</label>
+          <select id="race-metric">
+            <option value="gdp">Total GDP</option>
+            <option value="population">Population</option>
+            <option value="life_expectancy">Life Expectancy</option>
+          </select>
+        </div>
+        <button id="race-play-btn" class="play-btn">▶ Start Race</button>
+      </div>
+      <svg id="racing-bars" viewBox="0 0 900 600"></svg>
+    </div>
+
+    <!-- Visualization 3: Interactive Stream Graph -->
+    <div class="viz-container">
+      <div class="viz-header">
+        <h3>📊 Regional GDP Evolution</h3>
+        <p>Explore how economic power shifted between regions over six decades</p>
+      </div>
+      <svg id="stream-graph" viewBox="0 0 1000 500"></svg>
+      <div class="stream-legend" id="stream-legend"></div>
+    </div>
+
+    <!-- Visualization 4: Bubble Chart with Animation -->
+    <div class="viz-container">
+      <div class="viz-header">
+        <h3>💫 Wealth, Health & Population</h3>
+        <p>Three dimensions of development in motion: GDP per capita, life expectancy, and population size</p>
+      </div>
+      <div class="viz-controls">
+        <div class="control-group">
+          <label>Year: <span id="bubble-year-display">2020</span></label>
+          <input type="range" id="bubble-year-slider" min="1960" max="2020" value="2020" step="10">
+        </div>
+        <button id="bubble-play-btn" class="play-btn">▶ Animate</button>
+      </div>
+      <svg id="bubble-chart" viewBox="0 0 900 600"></svg>
+      <div class="bubble-legend" id="bubble-legend"></div>
       <div class="tooltip"></div>
     </div>
 
-    <!-- Visualization 3: Global Development Map -->
+    <!-- Visualization 5: Radial Area Chart -->
     <div class="viz-container">
       <div class="viz-header">
-        <h3>🌍 Global Development Map</h3>
-        <p>See how development indicators vary across countries. Select an indicator to visualize on the map.</p>
+        <h3>🎯 Development Indicators Radar</h3>
+        <p>Compare countries across multiple development dimensions</p>
       </div>
       <div class="viz-controls">
-        <label>
-          Indicator:
-          <select id="indicator-select">
-            <option value="gdp">GDP Per Capita</option>
-            <option value="life_expectancy">Life Expectancy</option>
-            <option value="population">Population</option>
-            <option value="internet">Internet Users (%)</option>
-          </select>
-        </label>
+        <div class="control-group country-selector">
+          <label>Select Countries:</label>
+          <div class="country-chips" id="country-chips"></div>
+        </div>
       </div>
-      <div id="map" class="map-container"></div>
+      <svg id="radar-chart" viewBox="0 0 700 700"></svg>
+    </div>
+
+    <!-- Visualization 6: Connected Scatter Plot (Trajectories) -->
+    <div class="viz-container">
+      <div class="viz-header">
+        <h3>🛤️ Development Trajectories</h3>
+        <p>Trace the unique paths countries took from 1960 to 2020</p>
+      </div>
+      <svg id="trajectory-chart" viewBox="0 0 900 600"></svg>
+      <div class="trajectory-legend" id="trajectory-legend"></div>
     </div>
   </section>
 
