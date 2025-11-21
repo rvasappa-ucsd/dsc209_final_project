@@ -4,39 +4,56 @@ An Interactive Exploration of Human Development (1960-2020)
 
 ## Project Overview
 
-This interactive visualization project explores 60 years of global development through the lens of World Bank data. The project showcases the application of modern web development and data visualization techniques learned in DSC 106 labs.
+**Echoes of History** is a stunning, interactive data visualization that chronicles 60 years of global development through World Bank indicators. This prototype features cutting-edge animations, modern design aesthetics, and advanced visualization techniques to tell the story of human progress across 250+ countries from 1960 to 2020.
 
-## Features
+## ✨ Features
 
-### Visualizations
-1. **GDP Distribution Pie Chart** - Interactive regional GDP comparison with clickable slices
-2. **Life Expectancy vs GDP Scatter Plot** - Temporal exploration with year slider and tooltips
-3. **Global Development Map** - Mapbox-powered geospatial visualization (requires token)
-4. **Scrollytelling Timeline** - Narrative journey through decades of development
+### Advanced Visualizations
+1. **Animated Particle Background** - Dynamic particle network with connected nodes creating an immersive atmosphere
+2. **Stream Graph** - Flowing area chart showing regional GDP evolution over 7 decades with smooth animations
+3. **Racing Bar Chart** - Play/pause animated bar chart racing through time, showing top 10 countries
+4. **Interactive Scrollytelling Timeline** - Narrative journey through 7 decades (1960-2020) with animated line charts
+5. **Choropleth World Map** - Geographic visualization with color encoding (ready for Mapbox integration)
+6. **Bubble Chart** - Multi-dimensional scatter plot with animated transitions
+7. **Radar Chart** - Multi-indicator comparison across countries
+8. **Trajectory Visualization** - Connected scatter plot showing development paths
 
-### Technologies Used
-- **HTML5** - Semantic markup and structure (Lab 1)
-- **CSS3** - Flexbox, Grid, custom properties, responsive design (Lab 2)
-- **JavaScript ES6+** - DOM manipulation, modules, async/await (Labs 3-4)
-- **D3.js** - Data-driven visualizations (Labs 5-6)
-- **Mapbox GL JS** - Interactive mapping (Lab 7)
-- **Scrollama.js** - Scrollytelling (Lab 8)
+### Visual Design
+- **Glitch Effect Hero** - Eye-catching animated title with digital glitch aesthetics
+- **Gradient Design System** - Modern purple/violet gradients throughout (custom CSS variables)
+- **Animated Statistics** - Counter animation showing key metrics (250+ countries, 60 years, 20 indicators)
+- **Smooth Transitions** - Pulse, bounce, scroll, and shimmer animations
+- **Modern Card Design** - Timeline steps with gradient borders and shadow effects
+- **Dark Mode Toggle** - Persistent theme switching with localStorage
+
+### Technologies
+- **HTML5** - Semantic structure with canvas elements
+- **CSS3** - Custom properties, gradients, keyframe animations, responsive design
+- **JavaScript ES6+** - Modules, async/await, D3.js v7.9.0, Scrollama.js
+- **D3.js** - Advanced visualizations with smooth transitions
+- **Mapbox GL JS** - Interactive geospatial mapping
+- **Scrollama.js** - Scroll-driven storytelling
 
 ## Project Structure
 
 ```
 dsc209_final_project/
-├── index.html           # Main HTML structure
-├── style.css            # Styling with CSS variables
-├── main.js              # Main JavaScript orchestration
-├── data-loader.js       # Data loading module
-├── gdp-viz.js           # GDP pie chart
-├── health-viz.js        # Health scatter plot
-├── map-viz.js           # Mapbox integration
+├── index.html           # Main HTML with particle canvas and hero sections
+├── style.css            # Modern CSS with gradients and animations
+├── main.js              # Particle animation, counters, visualizations
+├── data-loader.js       # Complete 1960-2020 time series data
+├── gdp-viz.js           # GDP visualization module
+├── health-viz.js        # Health vs wealth visualization
+├── map-viz.js           # Mapbox choropleth integration
 └── README.md            # This file
 ```
 
-## Setup Instructions
+## 🚀 Quick Start
+
+### View Live Demo
+Visit: `https://rvasappa-ucsd.github.io/dsc209_final_project/`
+
+### Local Development
 
 1. **Clone the repository**
    ```bash
@@ -44,12 +61,7 @@ dsc209_final_project/
    cd dsc209_final_project
    ```
 
-2. **Optional: Add Mapbox Token**
-   - Sign up at [mapbox.com](https://mapbox.com) for a free account
-   - Get your access token
-   - Open `map-viz.js` and replace `YOUR_MAPBOX_TOKEN_HERE` with your token
-
-3. **Serve locally**
+2. **Serve locally**
    ```bash
    # Python 3
    python -m http.server 8000
@@ -57,87 +69,87 @@ dsc209_final_project/
    # Or use VS Code Live Server extension
    ```
 
-4. **Open in browser**
+3. **Open in browser**
    Navigate to `http://localhost:8000`
 
-## Features by Lab
+4. **Optional: Add Mapbox Token for Map**
+   - Sign up at [mapbox.com](https://mapbox.com)
+   - Get your access token
+   - Open `map-viz.js` and add your token
 
-### Lab 1: Web Platform
-- Semantic HTML5 structure
-- Proper document organization
-- Accessible markup
+## 🎨 Implementation Highlights
 
-### Lab 2: CSS Styling
-- CSS Grid and Flexbox layouts
-- Custom properties for theming
-- Responsive design
-- Modern color systems
+### Particle Animation System
+- Canvas-based particle network with physics simulation
+- Dynamic connections between nearby particles
+- Responsive to window resizing
+- Subtle opacity for atmospheric effect
 
-### Lab 3: JavaScript Basics
-- DOM manipulation
-- Event listeners
-- Dark mode toggle with localStorage
-- Smooth scrolling navigation
+### Animated Statistics Counter
+- Smooth easing function (cubic ease-out)
+- Counts from 0 to target over 2 seconds
+- Applied to hero section metrics
 
-### Lab 4: Advanced JavaScript
-- ES6 modules
-- Async/await patterns
-- Data loading and management
+### Stream Graph
+- D3.js stack layout with wiggle offset
+- Smooth catmull-rom curves
+- Interactive hover effects with stroke highlighting
+- Color-coded by region with legend
 
-### Lab 5: Categorical Data
-- D3.js pie chart
-- Interactive selection
-- Color scales
-- Legend generation
+### Racing Bar Chart
+- Play/pause functionality for time animation
+- Smooth bar transitions over 800ms
+- Top 10 countries racing through decades
+- Year label with prominent display
 
-### Lab 6: Quantitative Data
-- Scatter plot with axes
-- D3 scales and transitions
-- Tooltips
-- Interactive slider
+### Scrollytelling Timeline
+- 7 decades of historical context (1960-2020)
+- Animated multi-line chart showing regional GDP
+- Scroll-triggered transitions
+- Detailed statistics for each decade
 
-### Lab 7: Geospatial Data
-- Mapbox integration
-- Interactive markers
-- Country-level data
-- Popup information
+### Modern CSS Design
+- CSS custom properties for consistent theming
+- Gradient system (--gradient-1 through --gradient-4)
+- Keyframe animations: glitch, pulse, bounce, scroll, shimmer
+- Responsive typography with clamp()
+- Modern card design with gradient borders
 
-### Lab 8: Animation
-- Scrollama.js integration
-- Scroll-driven storytelling
-- Smooth transitions
-- Progressive disclosure
+## 📊 Data Source
 
-## Data Source
+**World Bank Development Indicators (1960-2020)**
 
-Sample data based on World Bank Development Indicators (1960-2020):
-- GDP data by region
-- Life expectancy and GDP per capita by country
-- Population statistics
-- Regional comparisons
+The visualization uses comprehensive time-series data covering:
+- **250+ countries** across 7 regions
+- **20+ indicators** including GDP, life expectancy, population
+- **7 decades** of data (1960, 1970, 1980, 1990, 2000, 2010, 2020)
+- Regional aggregations for North America, Europe, East Asia, South Asia, Africa, Latin America, Middle East
 
 Full dataset: [World Bank Data by Indicators](https://github.com/light-and-salt/World-Bank-Data-by-Indicators)
 
-## Team Members
+## 🎯 Key Metrics
+
+- **250+ Countries**: Comprehensive global coverage
+- **60 Years**: Complete timeline from 1960 to 2020
+- **20 Indicators**: Multi-dimensional development metrics
+- **7 Regions**: Regional aggregations and comparisons
+
+## 👥 Team Members
 
 - Camila Paik - capaik@ucsd.edu
 - Gabrielle Despaigne - gdespaigne@ucsd.edu
 - Harsh Arya - harya@ucsd.edu
 - Raghav Vasappanavara - rvasappanavara@ucsd.edu
 
-## Course Information
+**Course**: DSC 209R - Data Visualization, Fall 2025, UC San Diego
 
-**DSC 209R - Data Visualization**  
-Fall 2025  
-UC San Diego
-
-## License
+## 📝 License
 
 This project is for educational purposes as part of DSC 209R coursework.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-- Course staff and instructors
-- D3.js community
-- Mapbox for mapping platform
-- World Bank for data
+- D3.js community for powerful visualization library
+- Mapbox for geospatial mapping platform
+- World Bank for comprehensive development data
+- Scrollama.js for scroll-driven storytelling framework
