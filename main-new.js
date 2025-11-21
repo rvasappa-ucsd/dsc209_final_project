@@ -1058,10 +1058,11 @@ function createRadarChart() {
   
   // Indicators with normalization ranges
   const indicators = [
-    { name: 'GDP per Capita', key: 'gdpPerCapita', max: 70000 },
-    { name: 'Life Expectancy', key: 'lifeExpectancy', max: 85 },
+    { name: 'GDP per Capita', key: 'gdpPerCapita', min: 0, max: 70000 },
+    // Focus life expectancy range on 55–85 years for better contrast
+    { name: 'Life Expectancy (55–85)', key: 'lifeExpectancy', min: 55, max: 85 },
     // Population represented in millions, max ~1.5B → 1500M
-    { name: 'Population (M)', key: 'population', max: 1500, scale: 1000000 }
+    { name: 'Population (M)', key: 'population', min: 0, max: 1500, scale: 1000000 }
   ];
   const numIndicators = indicators.length;
   
@@ -1127,7 +1128,10 @@ function createRadarChart() {
     const values = indicators.map(ind => {
       const value = country[ind.key];
       const scaledValue = ind.scale ? value / ind.scale : value;
-      return Math.min(scaledValue / ind.max, 1);
+      const min = ind.min ?? 0;
+      const max = ind.max;
+      const normalized = (scaledValue - min) / (max - min || 1);
+      return Math.max(0, Math.min(normalized, 1));
     });
     
     // Add closing point
