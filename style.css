@@ -521,7 +521,8 @@ article {
 
 .viz-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  /* Single-column layout so each visualization spans full width */
+  grid-template-columns: 1fr;
   gap: var(--spacing-lg);
   max-width: var(--max-width);
   margin: 0 auto;
@@ -539,12 +540,15 @@ article {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 500px;
+  /* Increase height so non-featured charts visually match featured ones */
+  min-height: 600px;
 }
 
 .viz-container.featured {
-  grid-column: 1 / -1;
-  min-height: 600px;
+  /* In a single-column grid this is equivalent to 1 column,
+     but we keep it for clarity and future flexibility. */
+  grid-column: 1;
+  min-height: 650px;
 }
 
 .viz-container::before {
@@ -835,6 +839,9 @@ article {
 /* SVG Styles */
 svg {
   overflow: visible;
+  /* Make charts fill their containers */
+  width: 100%;
+  height: 100%;
 }
 
 svg path {

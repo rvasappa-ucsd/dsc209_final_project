@@ -187,6 +187,11 @@ async function loadWorldBankData() {
 
       const meta = countryMetaByCode[code] || {};
       const wbRegion = meta.region || '';
+
+      // Skip aggregate entities (World, Euro area, High income, etc.)
+      // These typically have no World Bank "Region" assigned.
+      if (!wbRegion) return;
+
       const region = REGION_NORMALIZATION[wbRegion] || wbRegion || 'Other';
       const countryName = countryNameByCode[code] || meta.name || code;
 

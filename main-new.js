@@ -383,25 +383,14 @@ let raceInterval = null;
 
 function createRacingBars() {
   const playBtn = document.getElementById('race-play-btn');
-  
+  const metricSelect = document.getElementById('race-metric');
+  const yearSlider = document.getElementById('race-year-slider');
+  const yearDisplay = document.getElementById('race-year-display');
+
   if (!playBtn) {
     console.warn('Race play button not found');
     return;
   }
-  
-  playBtn.addEventListener('click', () => {
-    if (raceInterval) {
-      clearInterval(raceInterval);
-      raceInterval = null;
-      playBtn.textContent = '▶ Start Race';
-    } else {
-      startRace();
-      playBtn.textContent = '⏸ Pause';
-    }
-  });
-}
-
-function startRace() {
   if (typeof healthData === 'undefined') {
     console.warn('healthData not loaded');
     return;
@@ -409,39 +398,58 @@ function startRace() {
 
   const svg = d3.select('#racing-bars');
   svg.selectAll('*').remove();
-  
+
   const margin = { top: 80, right: 100, bottom: 40, left: 200 };
   const width = 900 - margin.left - margin.right;
   const height = 600 - margin.top - margin.bottom;
-  
+
   const g = svg.append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
-  
-  const years = Object.keys(healthData).map(Number);
-  let yearIndex = 0;
-  
+
+  const years = Object.keys(healthData).map(Number).sort((a, b) => a - b);
   const barHeight = height / 10 - 10;
-  
-  function updateRace() {
-    if (yearIndex >= years.length) {
-      clearInterval(raceInterval);
-      raceInterval = null;
-      const btn = document.getElementById('race-play-btn');
-      if (btn) btn.textContent = '▶ Start Race';
+
+  function getMetricConfig(key) {
+    switch (key) {
+      case 'population':
+        return {
+          label: 'Population',
+          accessor: d => d.population,
+          format: v => (v / 1e6).toFixed(1) + 'M'
+        };
+      case 'life_expectancy':
+        return {
+          label: 'Life Expectancy',
+          accessor: d => d.lifeExpectancy,
+          format: v => v.toFixed(1) + ' yrs'
+        };
+      case 'gdp':
+      default:
+        return {
+          label: 'Total GDP',
+          accessor: d => d.gdpPerCapita * d.population,
+          format: v => '$' + (v / 1e12).toFixed(2) + 'T'
+        };
+    }
+  }
+
+  function renderRaceForYear(year, metricKey) {
+    const metricConfig = getMetricConfig(metricKey);
+    const dataForYear = healthData[year];
+    if (!dataForYear || !dataForYear.length) {
+      console.warn('No data for year in race chart:', year);
       return;
     }
-    
-    const year = years[yearIndex];
-    const data = healthData[year]
+
+    const data = dataForYear
       .slice()
-      .sort((a, b) => b.gdpPerCapita - a.gdpPerCapita)
+      .sort((a, b) => metricConfig.accessor(b) - metricConfig.accessor(a))
       .slice(0, 10);
-    
+
     const xScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.gdpPerCapita)])
+      .domain([0, d3.max(data, d => metricConfig.accessor(d)) || 1])
       .range([0, width]);
-    
-    // Update year display
+
     svg.selectAll('.year-label').remove();
     svg.append('text')
       .attr('class', 'year-label')
@@ -452,11 +460,10 @@ function startRace() {
       .style('font-weight', '800')
       .style('fill', '#667eea')
       .text(year);
-    
-    // Update bars
+
     const bars = g.selectAll('.race-bar')
       .data(data, d => d.country);
-    
+
     bars.enter()
       .append('rect')
       .attr('class', 'race-bar')
@@ -469,14 +476,13 @@ function startRace() {
       .transition()
       .duration(800)
       .attr('y', (d, i) => i * (barHeight + 10))
-      .attr('width', d => xScale(d.gdpPerCapita));
-    
+      .attr('width', d => xScale(metricConfig.accessor(d)));
+
     bars.exit().remove();
-    
-    // Update labels
+
     const labels = g.selectAll('.race-label')
       .data(data, d => d.country);
-    
+
     labels.enter()
       .append('text')
       .attr('class', 'race-label')
@@ -491,17 +497,16 @@ function startRace() {
       .duration(800)
       .attr('y', (d, i) => i * (barHeight + 10) + barHeight / 2)
       .text(d => d.country);
-    
+
     labels.exit().remove();
-    
-    // Update values
+
     const values = g.selectAll('.race-value')
       .data(data, d => d.country);
-    
+
     values.enter()
       .append('text')
       .attr('class', 'race-value')
-      .attr('x', d => xScale(d.gdpPerCapita) + 5)
+      .attr('x', d => xScale(metricConfig.accessor(d)) + 5)
       .attr('y', (d, i) => i * (barHeight + 10) + barHeight / 2)
       .attr('dy', '0.35em')
       .style('font-size', '12px')
@@ -509,17 +514,67 @@ function startRace() {
       .merge(values)
       .transition()
       .duration(800)
-      .attr('x', d => xScale(d.gdpPerCapita) + 5)
+      .attr('x', d => xScale(metricConfig.accessor(d)) + 5)
       .attr('y', (d, i) => i * (barHeight + 10) + barHeight / 2)
-      .text(d => '$' + d.gdpPerCapita.toLocaleString());
-    
+      .text(d => metricConfig.format(metricConfig.accessor(d)));
+
     values.exit().remove();
-    
+  }
+
+  if (yearSlider && years.length) {
+    yearSlider.min = years[0];
+    yearSlider.max = years[years.length - 1];
+    yearSlider.value = years[0];
+    if (yearDisplay) yearDisplay.textContent = years[0];
+
+    yearSlider.addEventListener('input', () => {
+      const yr = parseInt(yearSlider.value);
+      if (!healthData[yr]) return;
+      if (yearDisplay) yearDisplay.textContent = yr;
+      const metricKey = metricSelect ? metricSelect.value : 'gdp';
+      if (!raceInterval) {
+        renderRaceForYear(yr, metricKey);
+      }
+    });
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (raceInterval) {
+      clearInterval(raceInterval);
+      raceInterval = null;
+      playBtn.textContent = '▶ Start Race';
+    } else {
+      const metric = metricSelect ? metricSelect.value : 'gdp';
+      startRace(metric);
+      playBtn.textContent = '⏸ Pause';
+    }
+  });
+}
+
+function startRace(metricKey = 'gdp') {
+  if (typeof healthData === 'undefined') {
+    console.warn('healthData not loaded');
+    return;
+  }
+
+  const years = Object.keys(healthData).map(Number).sort((a, b) => a - b);
+  let yearIndex = 0;
+
+  function step() {
+    if (yearIndex >= years.length) {
+      clearInterval(raceInterval);
+      raceInterval = null;
+      const btn = document.getElementById('race-play-btn');
+      if (btn) btn.textContent = '▶ Start Race';
+      return;
+    }
+    const year = years[yearIndex];
+    renderRaceForYear(year, metricKey);
     yearIndex++;
   }
-  
-  updateRace();
-  raceInterval = setInterval(updateRace, 1500);
+
+  step();
+  raceInterval = setInterval(step, 1500);
 }
 
 // ===================================
@@ -680,23 +735,26 @@ function createBubbleChart() {
 }
 
 // ===================================
-// Mapbox World Map Visualization
+// Mapbox World Map Visualization (Choropleth)
 // ===================================
 function createWorldMap() {
   const mapContainer = document.getElementById('world-map');
   if (!mapContainer) return;
-  
+
   // Check if Mapbox is available
   if (typeof mapboxgl === 'undefined') {
     mapContainer.innerHTML = '<p style="text-align:center; padding: 100px 20px; color: #9aa0a6;">Mapbox GL JS not loaded. Please refresh the page.</p>';
     return;
   }
-  
-  // Set Mapbox access token
+
+  if (typeof healthData === 'undefined') {
+    mapContainer.innerHTML = '<p style="text-align:center; padding: 100px 20px; color: #9aa0a6;">Data not loaded yet. Please refresh the page.</p>';
+    return;
+  }
+
   mapboxgl.accessToken = 'pk.eyJ1IjoicnZhc2FwcGEiLCJhIjoiY21oenVjaHZsMHFzbjJsb3F6MzhwNWJqNiJ9.nm--3SzBTxssD9-65V2e2Q';
-  
+
   try {
-    // Initialize map
     const map = new mapboxgl.Map({
       container: 'world-map',
       style: 'mapbox://styles/mapbox/dark-v11',
@@ -704,163 +762,112 @@ function createWorldMap() {
       zoom: 1.5,
       projection: 'mercator'
     });
-    
-    // Add navigation controls
+
     map.addControl(new mapboxgl.NavigationControl());
-    
-    // Enhanced country data with historical timeline and multiple indicators
-    const countryData = {
-      'United States': { 
-        coords: [-95.7129, 37.0902], 
-        data: { 
-          1960: { gdp: 3007, life_expectancy: 69.8, internet: 0, mobile: 0 },
-          1980: { gdp: 12598, life_expectancy: 73.7, internet: 0, mobile: 0 },
-          2000: { gdp: 36450, life_expectancy: 76.8, internet: 43.1, mobile: 38.8 },
-          2020: { gdp: 63543, life_expectancy: 77.3, internet: 87.3, mobile: 121.6 }
-        }
+
+    const indicatorSelect = document.getElementById('map-indicator');
+    const yearSlider = document.getElementById('map-year-slider');
+    const yearDisplay = document.getElementById('map-year-display');
+    const playBtn = document.getElementById('play-pause-btn');
+
+    const years = Object.keys(healthData).map(Number).sort((a, b) => a - b);
+
+    // Precompute global domains so color scales are stable across years
+    const gdpValues = [];
+    const lifeValues = [];
+    years.forEach(y => {
+      (healthData[y] || []).forEach(d => {
+        if (Number.isFinite(d.gdpPerCapita)) gdpValues.push(d.gdpPerCapita);
+        if (Number.isFinite(d.lifeExpectancy)) lifeValues.push(d.lifeExpectancy);
+      });
+    });
+
+    const gdpPositive = gdpValues.filter(v => v > 0);
+    const gdpLogs = gdpPositive.map(v => Math.log10(v));
+    let gdpLogMin = gdpLogs.length ? d3.quantile(gdpLogs, 0.05) : 0;
+    let gdpLogMax = gdpLogs.length ? d3.quantile(gdpLogs, 0.95) : 1;
+    if (gdpLogMin == null) gdpLogMin = gdpLogs.length ? d3.min(gdpLogs) : 0;
+    if (gdpLogMax == null) gdpLogMax = gdpLogs.length ? d3.max(gdpLogs) : 1;
+
+    const indicatorDomains = {
+      gdp: {
+        // raw value domain for legends
+        min: gdpPositive.length ? d3.min(gdpPositive) : 0,
+        max: gdpPositive.length ? d3.max(gdpPositive) : 1,
+        // log10 domain for color mapping (with outlier trimming)
+        logMin: gdpLogMin,
+        logMax: gdpLogMax
       },
-      'China': { 
-        coords: [104.1954, 35.8617], 
-        data: {
-          1960: { gdp: 89, life_expectancy: 43.7, internet: 0, mobile: 0 },
-          1980: { gdp: 194, life_expectancy: 66.5, internet: 0, mobile: 0 },
-          2000: { gdp: 959, life_expectancy: 71.4, internet: 1.8, mobile: 6.6 },
-          2020: { gdp: 10408, life_expectancy: 77.5, internet: 70.5, mobile: 124.9 }
-        }
-      },
-      'India': { 
-        coords: [78.9629, 20.5937], 
-        data: {
-          1960: { gdp: 82, life_expectancy: 41.3, internet: 0, mobile: 0 },
-          1980: { gdp: 266, life_expectancy: 54.1, internet: 0, mobile: 0 },
-          2000: { gdp: 443, life_expectancy: 62.5, internet: 0.5, mobile: 0.4 },
-          2020: { gdp: 1965, life_expectancy: 69.7, internet: 43.0, mobile: 84.8 }
-        }
-      },
-      'Germany': { 
-        coords: [10.4515, 51.1657], 
-        data: {
-          1960: { gdp: 1200, life_expectancy: 69.3, internet: 0, mobile: 0 },
-          1980: { gdp: 11730, life_expectancy: 72.6, internet: 0, mobile: 0 },
-          2000: { gdp: 23740, life_expectancy: 78.3, internet: 30.2, mobile: 58.6 },
-          2020: { gdp: 46445, life_expectancy: 80.9, internet: 90.7, mobile: 127.8 }
-        }
-      },
-      'Brazil': { 
-        coords: [-47.8825, -14.2350], 
-        data: {
-          1960: { gdp: 205, life_expectancy: 54.6, internet: 0, mobile: 0 },
-          1980: { gdp: 1760, life_expectancy: 62.5, internet: 0, mobile: 0 },
-          2000: { gdp: 3750, life_expectancy: 70.4, internet: 2.9, mobile: 13.3 },
-          2020: { gdp: 6796, life_expectancy: 75.9, internet: 74.9, mobile: 107.2 }
-        }
-      },
-      'Nigeria': { 
-        coords: [8.6753, 9.0820], 
-        data: {
-          1960: { gdp: 93, life_expectancy: 37.3, internet: 0, mobile: 0 },
-          1980: { gdp: 852, life_expectancy: 45.8, internet: 0, mobile: 0 },
-          2000: { gdp: 374, life_expectancy: 46.3, internet: 0.1, mobile: 0.2 },
-          2020: { gdp: 2097, life_expectancy: 54.7, internet: 42.0, mobile: 88.3 }
-        }
+      life_expectancy: {
+        min: lifeValues.length ? d3.min(lifeValues) : 0,
+        max: lifeValues.length ? d3.max(lifeValues) : 1
       }
     };
-    
-    // Store markers and current state
-    const markers = {};
-    let currentIndicator = 'life_expectancy';
-    let currentYear = 2020;
-    
-    // Color scale for indicators
-    function getColorScale(indicator) {
-      switch(indicator) {
-        case 'gdp':
-          return d3.scaleSequential(d3.interpolateBlues).domain([0, 70000]);
+
+    function getIndicatorConfig(indicator) {
+      const key = indicator === 'gdp' ? 'gdp' : 'life_expectancy';
+      const domain = indicatorDomains[key];
+      switch (key) {
+        case 'gdp': {
+          // Multi-hue gradient: white → yellow → green → blue
+          const gdpInterpolator = d3.interpolateRgbBasis([
+            '#ffffff', // low
+            '#fff7b2', // light yellow
+            '#41ab5d', // green
+            '#2171b5'  // high (blue)
+          ]);
+          return {
+            id: 'gdp',
+            name: 'GDP Per Capita',
+            emoji: '💰',
+            accessor: d => d.gdpPerCapita,
+            format: v => `$${v.toLocaleString()}`,
+            // use log10 space for color, clamp to trimmed global domain
+            scale: d3.scaleSequential(gdpInterpolator)
+              .domain([domain.logMin, domain.logMax])
+              .clamp(true)
+          };
+        }
         case 'life_expectancy':
-          return d3.scaleSequential(d3.interpolateViridis).domain([35, 85]);
-        case 'internet':
-          return d3.scaleSequential(d3.interpolateOranges).domain([0, 100]);
-        case 'mobile':
-          return d3.scaleSequential(d3.interpolatePurples).domain([0, 130]);
         default:
-          return d3.scaleSequential(d3.interpolateViridis).domain([0, 100]);
+          return {
+            id: 'life_expectancy',
+            name: 'Life Expectancy',
+            emoji: '❤️',
+            accessor: d => d.lifeExpectancy,
+            format: v => `${v.toFixed(1)} years`,
+            scale: d3.scaleSequential(d3.interpolateViridis)
+              .domain([domain.min, domain.max])
+              .clamp(true)
+          };
       }
     }
-    
-    // Get indicator label and formatting
-    function getIndicatorLabel(indicator) {
-      const labels = {
-        'gdp': { name: 'GDP Per Capita', format: (v) => `$${v.toLocaleString()}`, emoji: '💰' },
-        'life_expectancy': { name: 'Life Expectancy', format: (v) => `${v.toFixed(1)} years`, emoji: '❤️' },
-        'internet': { name: 'Internet Users', format: (v) => `${v.toFixed(1)}%`, emoji: '🌐' },
-        'mobile': { name: 'Mobile Subscriptions', format: (v) => `${v.toFixed(1)} per 100`, emoji: '📱' }
-      };
-      return labels[indicator] || labels['life_expectancy'];
-    }
-    
-    map.on('load', () => {
-      // Add markers for each country with enhanced styling
-      Object.entries(countryData).forEach(([country, info]) => {
-        const data = info.data[currentYear];
-        const colorScale = getColorScale(currentIndicator);
-        const markerColor = colorScale(data[currentIndicator]);
-        
-        // Create marker element with pulse effect
-        const el = document.createElement('div');
-        el.className = 'country-marker';
-        el.style.backgroundColor = markerColor;
-        el.style.width = '24px';
-        el.style.height = '24px';
-        el.style.borderRadius = '50%';
-        el.style.border = '3px solid rgba(255, 255, 255, 0.8)';
-        el.style.boxShadow = `0 0 10px ${markerColor}`;
-        el.style.cursor = 'pointer';
-        el.style.transition = 'all 0.3s ease';
-        
-        // Hover effect
-        el.addEventListener('mouseenter', () => {
-          el.style.transform = 'scale(1.3)';
-          el.style.boxShadow = `0 0 20px ${markerColor}`;
-        });
-        el.addEventListener('mouseleave', () => {
-          el.style.transform = 'scale(1)';
-          el.style.boxShadow = `0 0 10px ${markerColor}`;
-        });
-        
-        // Create popup
-        const indicatorInfo = getIndicatorLabel(currentIndicator);
-        const popup = new mapboxgl.Popup({ 
-          offset: 25,
-          closeButton: false
-        })
-        .setHTML(`
-          <div style="color: #212529; font-family: system-ui, -apple-system, sans-serif; padding: 10px;">
-            <strong style="font-size: 15px; color: ${markerColor};">${country}</strong><br/>
-            <div style="margin-top: 6px; font-size: 12px; line-height: 1.6;">
-              <span>${indicatorInfo.emoji} ${indicatorInfo.name}: <strong>${indicatorInfo.format(data[currentIndicator])}</strong></span>
-            </div>
-          </div>
-        `);
-        
-        // Add marker to map
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat(info.coords)
-          .setPopup(popup)
-          .addTo(map);
-        
-        markers[country] = { marker, popup, element: el, info };
+
+    function buildChoroplethExpression(year, indicator) {
+      const data = healthData[year] || [];
+      const cfg = getIndicatorConfig(indicator);
+      const domain = indicatorDomains[cfg.id];
+
+      const expression = ['match', ['get', 'iso_3166_1_alpha_3']];
+
+      data.forEach(row => {
+        const v = cfg.accessor(row);
+        if (v === null || v === undefined || !Number.isFinite(v)) return;
+        const color = cfg.id === 'gdp'
+          ? cfg.scale(Math.log10(v))
+          : cfg.scale(v);
+        // World Bank uses ISO3 for most countries, which matches this property
+        expression.push(row.countryCode, color);
       });
-      
-      // Add legend
-      updateMapLegend();
-    });
-    
-    // Create/update color legend based on current indicator
-    function updateMapLegend() {
-      // Remove existing legend
+
+      expression.push('rgba(0,0,0,0)');
+      return { expression, cfg, domain };
+    }
+
+    function updateMapLegend(cfg, domain) {
       const existingLegend = mapContainer.querySelector('.map-legend-custom');
       if (existingLegend) existingLegend.remove();
-      
+
       const legendDiv = document.createElement('div');
       legendDiv.className = 'map-legend-custom';
       legendDiv.style.cssText = `
@@ -877,127 +884,147 @@ function createWorldMap() {
         z-index: 1;
         backdrop-filter: blur(10px);
       `;
-      
-      const indicatorInfo = getIndicatorLabel(currentIndicator);
-      const colorScale = getColorScale(currentIndicator);
-      
-      // Create gradient for legend
-      const gradientSteps = 5;
-      const domain = colorScale.domain();
-      const step = (domain[1] - domain[0]) / (gradientSteps - 1);
-      
-      const gradientHTML = Array.from({ length: gradientSteps }, (_, i) => {
-        const value = domain[0] + (step * i);
-        const color = colorScale(value);
-        return `
-          <div style="display: flex; align-items: center; margin-bottom: 5px;">
-            <div style="width: 20px; height: 14px; background: ${color}; margin-right: 8px; border: 1px solid rgba(255,255,255,0.3); border-radius: 2px;"></div>
-            <span style="font-size: 11px;">${indicatorInfo.format(value)}</span>
-          </div>
-        `;
-      }).join('');
-      
+
+      const steps = 5;
+      const items = [];
+
+      if (cfg.id === 'gdp') {
+        const logMin = domain.logMin;
+        const logMax = domain.logMax;
+        const stepSize = (logMax - logMin) / (steps - 1 || 1);
+        for (let i = 0; i < steps; i++) {
+          const logValue = logMin + i * stepSize;
+          const rawValue = Math.pow(10, logValue);
+          const color = cfg.scale(logValue);
+          items.push({ value: rawValue, color });
+        }
+      } else {
+        const min = domain.min;
+        const max = domain.max;
+        const stepSize = (max - min) / (steps - 1 || 1);
+        for (let i = 0; i < steps; i++) {
+          const value = min + i * stepSize;
+          const color = cfg.scale(value);
+          items.push({ value, color });
+        }
+      }
+
+      const gradientHTML = items.map(item => `
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+          <div style="width: 20px; height: 14px; background: ${item.color}; margin-right: 8px; border: 1px solid rgba(255,255,255,0.3); border-radius: 2px;"></div>
+          <span style="font-size: 11px;">${cfg.format(item.value)}</span>
+        </div>
+      `).join('');
+
       legendDiv.innerHTML = `
-        <div style="font-weight: 600; margin-bottom: 10px; font-size: 13px;">${indicatorInfo.emoji} ${indicatorInfo.name}</div>
+        <div style="font-weight: 600; margin-bottom: 10px; font-size: 13px;">${cfg.emoji} ${cfg.name}</div>
         ${gradientHTML}
       `;
-      
+
       mapContainer.appendChild(legendDiv);
     }
-    
-    // Function to update map markers based on year and indicator
+
     function updateMapVisualization(year, indicator) {
-      const availableYears = [1960, 1980, 2000, 2020];
-      const closestYear = availableYears.reduce((prev, curr) => 
+      const closestYear = years.reduce((prev, curr) =>
         Math.abs(curr - year) < Math.abs(prev - year) ? curr : prev
       );
-      
-      currentYear = closestYear;
-      currentIndicator = indicator;
-      
-      const colorScale = getColorScale(indicator);
-      const indicatorInfo = getIndicatorLabel(indicator);
-      
-      Object.entries(markers).forEach(([country, markerObj]) => {
-        const data = markerObj.info.data[closestYear];
-        if (data) {
-          const markerColor = colorScale(data[indicator]);
-          
-          // Update marker color
-          markerObj.element.style.backgroundColor = markerColor;
-          markerObj.element.style.boxShadow = `0 0 10px ${markerColor}`;
-          
-          // Update popup content
-          markerObj.popup.setHTML(`
-            <div style="color: #212529; font-family: system-ui, -apple-system, sans-serif; padding: 10px;">
-              <strong style="font-size: 15px; color: ${markerColor};">${country}</strong>
-              <div style="font-size: 11px; color: #666; margin-top: 2px;">Year: ${closestYear}</div>
-              <div style="margin-top: 6px; font-size: 12px; line-height: 1.6;">
-                <span>${indicatorInfo.emoji} ${indicatorInfo.name}: <strong>${indicatorInfo.format(data[indicator])}</strong></span>
-              </div>
-            </div>
-          `);
+
+      const { expression, cfg, domain } = buildChoroplethExpression(closestYear, indicator);
+      if (Array.isArray(expression)) {
+        map.setPaintProperty('country-fills', 'fill-color', expression);
+        updateMapLegend(cfg, domain);
+      }
+
+      if (yearDisplay) {
+        yearDisplay.textContent = closestYear;
+      }
+      if (yearSlider) {
+        yearSlider.value = closestYear;
+      }
+    }
+
+    map.on('load', () => {
+      map.addSource('country-boundaries', {
+        type: 'vector',
+        url: 'mapbox://mapbox.country-boundaries-v1'
+      });
+
+      map.addLayer({
+        id: 'country-fills',
+        type: 'fill',
+        source: 'country-boundaries',
+        'source-layer': 'country_boundaries',
+        paint: {
+          'fill-color': 'rgba(0,0,0,0)',
+          'fill-opacity': 0.8
         }
       });
-      
-      // Update legend
-      updateMapLegend();
+
+      map.addLayer({
+        id: 'country-borders',
+        type: 'line',
+        source: 'country-boundaries',
+        'source-layer': 'country_boundaries',
+        paint: {
+          'line-color': '#2d3548',
+          'line-width': 0.5
+        }
+      });
+
+      // Initialize slider range
+      if (yearSlider && years.length) {
+        yearSlider.min = years[0];
+        yearSlider.max = years[years.length - 1];
+        if (!yearSlider.value) yearSlider.value = years[years.length - 1];
+      }
+
+      const initialYear = yearSlider ? parseInt(yearSlider.value) : years[years.length - 1];
+      const initialIndicator = indicatorSelect ? indicatorSelect.value : 'life_expectancy';
+      updateMapVisualization(initialYear, initialIndicator);
+    });
+
+    // Wire up controls
+    if (indicatorSelect) {
+      indicatorSelect.addEventListener('change', (e) => {
+        const year = yearSlider ? parseInt(yearSlider.value) : years[years.length - 1];
+        updateMapVisualization(year, e.target.value);
+      });
     }
-    
+
+    if (yearSlider) {
+      yearSlider.addEventListener('input', (e) => {
+        const year = parseInt(e.target.value);
+        const indicator = indicatorSelect ? indicatorSelect.value : 'life_expectancy';
+        updateMapVisualization(year, indicator);
+      });
+    }
+
+    if (playBtn) {
+      let playInterval = null;
+      playBtn.addEventListener('click', () => {
+        if (playInterval) {
+          clearInterval(playInterval);
+          playInterval = null;
+          playBtn.textContent = '▶ Play';
+        } else {
+          playBtn.textContent = '⏸ Pause';
+          let year = yearSlider ? parseInt(yearSlider.value) : years[0];
+          const indicator = indicatorSelect ? indicatorSelect.value : 'life_expectancy';
+
+          playInterval = setInterval(() => {
+            year += 1;
+            if (year > years[years.length - 1]) {
+              year = years[0];
+            }
+            updateMapVisualization(year, indicator);
+          }, 1500);
+        }
+      });
+    }
+
   } catch (error) {
     console.error('Mapbox initialization error:', error);
     mapContainer.innerHTML = '<p style="text-align:center; padding: 100px 20px; color: #9aa0a6;">Map initialization failed. Check console for details.</p>';
-  }
-  
-  // Map controls - Indicator dropdown, year slider, and play button
-  const indicatorSelect = document.getElementById('map-indicator');
-  const yearSlider = document.getElementById('map-year-slider');
-  const yearDisplay = document.getElementById('map-year-display');
-  const playBtn = document.getElementById('play-pause-btn');
-  
-  // Indicator change handler
-  if (indicatorSelect) {
-    indicatorSelect.addEventListener('change', (e) => {
-      const year = yearSlider ? parseInt(yearSlider.value) : 2020;
-      updateMapVisualization(year, e.target.value);
-    });
-  }
-  
-  // Year slider handler
-  if (yearSlider) {
-    yearSlider.addEventListener('input', (e) => {
-      const year = parseInt(e.target.value);
-      if (yearDisplay) {
-        yearDisplay.textContent = year;
-      }
-      const indicator = indicatorSelect ? indicatorSelect.value : 'life_expectancy';
-      updateMapVisualization(year, indicator);
-    });
-  }
-  
-  // Play button handler
-  if (playBtn) {
-    let playInterval = null;
-    playBtn.addEventListener('click', () => {
-      if (playInterval) {
-        clearInterval(playInterval);
-        playInterval = null;
-        playBtn.textContent = '▶ Play';
-      } else {
-        playBtn.textContent = '⏸ Pause';
-        let year = yearSlider ? parseInt(yearSlider.value) : 1960;
-        playInterval = setInterval(() => {
-          year += 5;
-          if (year > 2020) {
-            year = 1960;
-          }
-          if (yearSlider) yearSlider.value = year;
-          if (yearDisplay) yearDisplay.textContent = year;
-          const indicator = indicatorSelect ? indicatorSelect.value : 'life_expectancy';
-          updateMapVisualization(year, indicator);
-        }, 1500);
-      }
-    });
   }
 }
 
@@ -1019,18 +1046,22 @@ function createRadarChart() {
   const g = svg.append('g')
     .attr('transform', `translate(${centerX}, ${centerY})`);
   
-  // Get 2020 data for selected countries
-  const data2020 = healthData[2020] || [];
+  // Use 2020 if available, otherwise fall back to latest year with data
+  const allYears = Object.keys(healthData).map(Number).sort((a, b) => a - b);
+  const targetYear = allYears.includes(2020) ? 2020 : allYears[allYears.length - 1];
+  const dataYear = healthData[targetYear] || [];
+
   const selectedCountries = ['United States', 'China', 'India', 'Germany', 'Brazil'];
   const countryData = selectedCountries
-    .map(name => data2020.find(d => d.country === name))
+    .map(name => dataYear.find(d => d.country === name))
     .filter(d => d);
   
   // Indicators with normalization ranges
   const indicators = [
     { name: 'GDP per Capita', key: 'gdpPerCapita', max: 70000 },
     { name: 'Life Expectancy', key: 'lifeExpectancy', max: 85 },
-    { name: 'Population (M)', key: 'population', max: 1500000000, scale: 1000000 }
+    // Population represented in millions, max ~1.5B → 1500M
+    { name: 'Population (M)', key: 'population', max: 1500, scale: 1000000 }
   ];
   const numIndicators = indicators.length;
   

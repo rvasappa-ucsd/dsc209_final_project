@@ -214,8 +214,6 @@
           <select id="map-indicator">
             <option value="gdp">GDP Per Capita</option>
             <option value="life_expectancy" selected>Life Expectancy</option>
-            <option value="internet">Internet Penetration</option>
-            <option value="mobile">Mobile Subscriptions</option>
           </select>
         </div>
         <div class="control-group">
@@ -244,6 +242,10 @@
             <option value="population">Population</option>
             <option value="life_expectancy">Life Expectancy</option>
           </select>
+        </div>
+        <div class="control-group">
+          <label>Year: <span id="race-year-display">1960</span></label>
+          <input type="range" id="race-year-slider" min="1960" max="2020" value="1960" step="1">
         </div>
         <button id="race-play-btn" class="play-btn">▶ Start Race</button>
       </div>
