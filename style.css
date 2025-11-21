@@ -881,11 +881,12 @@ svg circle:hover {
 }
 
 .writeup-cards {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto var(--spacing-lg);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: var(--spacing-lg);
+  align-items: start;
 }
 
 .writeup-section h2 {
